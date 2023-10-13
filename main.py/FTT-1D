@@ -1,0 +1,94 @@
+from cmath import exp, pi
+import matplotlib.pyplot as plt
+import numpy as np
+
+def custom_fft(x):
+    N = len(x)
+    if N <= 1:
+        return x
+    # Divide and conquer approach for FFT
+    even = custom_fft(x[0::2])
+    odd = custom_fft(x[1::2])
+    t = [exp(-2j * pi * k / N) * odd[k] for k in range(N // 2)]
+    return [even[k] + t[k] for k in range(N // 2)] + [even[k] - t[k] for k in range(N // 2)]
+
+# Define signal parameters
+A = 1
+def signal1(t, A):
+    return 1 if -A/2 < t < A/2 else 0
+def signal2(t, A):
+    return 1 if -A < t < A else 0
+def signal3(t, A):
+    return 1 if -3*A < t < 3*A else 0
+
+# Define plot parameters
+t_interval = 7 * A
+n = 256
+
+# Generate time interval from -t_interval/2 to t_interval/2
+t = np.linspace(-t_interval/2, t_interval/2, n)
+
+signal1_data = [signal1(i, A) for i in t]
+signal2_data = [signal2(i, A) for i in t]
+signal3_data = [signal3(i, A) for i in t]
+
+# Calculate FFT using custom function
+output_1 = custom_fft(signal1_data)
+output_2 = custom_fft(signal2_data)
+output_3 = custom_fft(signal3_data)
+
+output_1_oneside = output_1[:n//2]
+output_2_oneside = output_2[:n//2]
+output_3_oneside = output_3[:n//2]
+
+# Calculate FFT using NumPy
+np_output_1 = np.fft.fft(signal1_data)
+np_output_2 = np.fft.fft(signal2_data)
+np_output_3 = np.fft.fft(signal3_data)
+
+np_output_1_oneside = np_output_1[:n//2]
+np_output_2_oneside = np_output_2[:n//2]
+np_output_3_oneside = np_output_3[:n//2]
+
+# Plot results
+plt.figure(figsize=(12, 8))
+
+plt.subplot(331)
+plt.plot(t, [signal1(i, A) for i in t])
+plt.title('Signal 1(A/2)')
+
+plt.subplot(332)
+plt.plot(np.abs(output_1_oneside))
+plt.title('Custom FFT of Signal 1')
+
+plt.subplot(333)
+plt.plot(np.abs(np_output_1_oneside))
+plt.title('NumPy FFT of Signal 1')
+
+plt.subplot(334)
+plt.plot(t, [signal2(i, A) for i in t])
+plt.title('Signal 2(A)')
+
+plt.subplot(335)
+plt.plot(np.abs(output_2_oneside))
+plt.title('Custom FFT of Signal 2')
+
+plt.subplot(336)
+plt.plot(np.abs(np_output_2_oneside))
+plt.title('NumPy FFT of Signal 2')
+
+plt.subplot(337)
+plt.plot(t, [signal3(i, A) for i in t])
+plt.title('Signal 3(3A)')
+
+plt.subplot(338)
+plt.plot(np.abs(output_3_oneside))
+plt.title('Custom FFT of Signal 3')
+
+plt.subplot(339)
+plt.plot(np.abs(np_output_3_oneside))
+plt.title('NumPy FFT of Signal 3')
+
+fig = plt.gcf()
+fig.subplots_adjust(hspace=0.4)
+plt.show()
