@@ -16,6 +16,10 @@ output_1 = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(signal1_data)))
 output_2 = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(signal2_data)))
 output_3 = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(signal3_data)))
 
+# Print Username
+print ("Clearesta Frederika Oscar")
+print ("5009211064")
+
 # Plot results
 plt.figure(figsize=(12, 8))
 
